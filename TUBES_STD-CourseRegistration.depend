@@ -1,0 +1,12 @@
+# depslib dependency file v1.0
+1641050808 source:c:\users\filza\onedrive - telkom university\dokumen\std 4u\tubes_std-courseregistration\main.cpp
+	"courseRegistration.h"
+	<stdlib.h>
+
+1640872673 c:\users\filza\onedrive - telkom university\dokumen\std 4u\tubes_std-courseregistration\courseregistration.h
+	<iostream>
+	<string>
+
+1641055504 source:c:\users\filza\onedrive - telkom university\dokumen\std 4u\tubes_std-courseregistration\courseregistration.cpp
+	"courseRegistration.h"
+
