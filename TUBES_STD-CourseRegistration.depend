@@ -10,3 +10,17 @@
 1641055504 source:c:\users\filza\onedrive - telkom university\dokumen\std 4u\tubes_std-courseregistration\courseregistration.cpp
 	"courseRegistration.h"
 
+1734392857 source:d:\github\simpel-lms-registrasi-mata-kuliah\courseregistration.cpp
+	"courseRegistration.h"
+	<cstring>
+
+1734393893 d:\github\simpel-lms-registrasi-mata-kuliah\courseregistration.h
+	<iostream>
+	<string>
+
+1734393884 source:d:\github\simpel-lms-registrasi-mata-kuliah\main.cpp
+	"courseRegistration.h"
+	<iostream>
+	<limits>
+	<stdlib.h>
+
