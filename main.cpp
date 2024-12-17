@@ -1,239 +1,307 @@
 #include "courseRegistration.h"
-#include <stdlib.h>
+#include <iostream>
+#include <limits>
+#include <stdlib.h> // For system("CLS")
+
+using namespace std;
+
 int main()
 {
-    listCourse LC;
-    listStudent LS;
-    adrCourse C;
-    adrStudent S;
-    int i, n, jumlah;
-    infotypeCourse newCourse;
-    infotypeStudent newStudent;
-    string course;
-    string type;
-    string name;
-    string Class;
+    // Add input buffer clearing before string inputs
+    cin.exceptions(ios::failbit | ios::badbit);
 
-    createList_Course(LC);
-    createList_Student(LS);
+    try {
+        listCourse LC;                    // List of courses
+        listStudent LS;                   // List of students
+        adrCourse C;                      // Pointer to a course element
+        adrStudent S;                     // Pointer to a student element
+        infotypeCourse newCourse;         // Data for a new course
+        infotypeStudent newStudent;       // Data for a new student
+        string course, type, name, Class; // Temporary variables for input
+        int i, n, jumlah;                 // Counters and input variables
+        int option = 0;                   // Menu selection
+        string continueProgram = "Y";
 
-    int opsi = 0;
-    string kembali = "Y";
+        // Initialize course and student lists
+        createList_Course(LC);
+        createList_Student(LS);
 
-    opsi = selectMenu();
-    cout<<endl;
-    while(opsi != 0 && kembali == "Y"){
-        switch(opsi){
-        case 1:
-            n = 0;
-            cout << "Banyak data mata kuliah yang ingin ditambahkan : ";
-            cin >> n;
+        // Display menu and process user input
+        do
+        {
+            try {
+                option = selectMenu();
+                cout << endl;
 
-            i = 1;
+                switch (option)
+                {
+                case 1: // Add new courses
+                    cout << "Enter the number of courses to add (1-10): ";
+                    cin >> n;
 
-            while(i<= n){
-                cout <<"Data ke-"<<i<<" : "<<endl;
-                cout<< "Nama mata kuliah: ";
-                cin >> newCourse.courseName;
-                cout<< "Nama kelas      : ";
-                cin>> newCourse.className;
-                cout<< "Kuota maksimal  : ";
-                cin>> newCourse.quota;
-                newCourse.Count = 0; //jumlah di set 0
-                cout<< "Jenis mahasiswa : ";
-                cin>> newCourse.studentType;
-
-                C = newElm_Course(newCourse);
-                addCourse(LC, C);
-                cout<<endl;
-                i++;
-            }
-            break;
-
-        case 2:
-
-            cout << "Masukkan data mata kuliah yang ingin dihapus: "<<endl;
-            cout << "Nama : ";
-            cin >> course;
-            cout << "Kelas: ";
-            cin >> Class;
-
-            C = first(LC);
-            while(C != NULL && (info(C).courseName != course || info(C).className != Class)){
-                C = next(C);
-            }
-
-            deleteCourse(LC, C);
-            if(C != NULL){
-                cout << "List data mata kuliah setelah penghapusan : "<<endl;
-                showCourses(LC);
-            }else{
-                cout<< "Mata kuliah yang ingin dihapus tidak terdaftar."<<endl;
-            }
-            break;
-
-        case 3:
-            cout << "----Input Data Diri Mahasiswa----"<<endl;
-
-            cout<< "Nama : ";
-            cin >> newStudent.studentName;
-            cout<< "NIM  : ";
-            cin>> newStudent.studentID;
-            cout<< "Asal Kelas      : ";
-            cin>> newStudent.classOrigin;
-            cout<< "Jenis mahasiswa : ";
-            cin>> newStudent.studentType;
-            S = newElm_Student(newStudent);
-            cout<<endl;
-
-            n = 0;
-            cout<< "Banyak mata kuliah yang ingin didaftarkan: ";
-            cin>> n;
-
-            jumlah = 0;
-            //menghitung banyak mata kuliah yang telah masuk registrasi
-            C = first(LC);
-            while(C != NULL){
-                adrStudent Mhs = nextStudent(C);
-                while(Mhs != NULL){
-                    if(info(Mhs).studentName == newStudent.studentName){
-                        jumlah += 1;
+                    // Input validation
+                    while (cin.fail() || n < 1 || n > 10)
+                    {
+                        cin.clear();
+                        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                        cout << "Please enter a valid number between 1 and 10: ";
+                        cin >> n;
                     }
-                    Mhs = next(Mhs);
-                }
-                C = next(C);
-            }
 
-            while((n + jumlah) > 3){
-                cout<<"Maaf, batas maksimal registrasi hanya 3 mata kuliah."<<endl;
-                cout<<"Kesempatan untuk registrasi mata kuliah tersisa "<< 3-jumlah <<"."<<endl;
-                cout<<"Masukkan kembali banyak mata kuliah: ";
-                cin >> n;
-            }
+                    for (i = 1; i <= n; ++i)
+                    {
+                        cout << "Course " << i << " details:" << endl;
+                        // Add input validation for course names
+                        do {
+                            cout << "Course Name: ";
+                            cin >> newCourse.courseName;
+                        } while (!isValidStringLength(newCourse.courseName, MIN_NAME_LENGTH, MAX_NAME_LENGTH));
+                        
+                        cout << "Class Name: ";
+                        cin >> newCourse.className;
+                        cout << "Maximum Quota: ";
+                        cin >> newCourse.quota;
+                        newCourse.Count = 0; // Initialize student count to 0
+                        cout << "Student Type (e.g., regular/international): ";
+                        cin >> newCourse.studentType;
 
-            i = 1;
-            while(i <= n){
-                cout << "Nama mata kuliah ke-"<< i <<": ";
-                cin >> course;
-                setClass(LC,LS, S, course);
-                i++;
-            }
-            cout<<endl;
-            break;
+                        // Clear input buffer before string inputs
+                        cin.ignore(numeric_limits<streamsize>::max(), '\n');
 
-        case 4:
-            cout<< "Masukkan data registrasi yang ingin dihapus: "<< endl;
-            cout<< "Nama mahasiswa: ";
-            cin>> name;
-            cout<< "Mata kuliah   : ";
-            cin>> course;
-
-            deleteClass(LC, LS, name, course);
-            cout << "List data registrasi setelah penghapusan : "<<endl;
-            showAllData(LC, LS);
-
-            break;
-
-        case 5:
-            updateCount(LC, LS);
-            cout<<"Status: jumlah mahasiswa berhasil terupdate."<<endl;
-            break;
-
-        case 6:
-            cout<<"LIST DATA MATA KULIAH"<<endl;
-            cout<<endl;
-            showCourses(LC);
-            break;
-
-        case 7:
-            cout<<"Nama mata kuliah : ";
-            cin >> course;
-
-            cout<<"Kelas : ";
-            cin >> Class;
-
-            showStudentInCourse(LC, LS, course, Class);
-            cout<<endl;
-            break;
-
-        case 8:
-            showAllData(LC, LS);
-            break;
-
-        case 9:
-            cout<< "Masukkan nama mata kuliah yang dicari: ";
-            cin >> course;
-
-            cout<< "Masukkan tipe yang dicari (reguler/internasional): ";
-            cin >> type;
-
-            C = searchCourseByQuota(LC, course, type);
-            if (C == NULL){
-                cout<<"Kuota untuk mata kuliah "<< course <<" dengan tipe "<< type <<" tidak tersedia :("<<endl;
-            }else{
-                cout<<"Berikut hasil pencarian mata kuliah yang sesuai.";
-                cout<<"Mata Kuliah : "<<info(C).courseName<<endl;
-                cout<<"Kelas       : "<<info(C).className <<endl;
-                cout<<"Kuota Max.  : "<<info(C).quota <<endl;
-                cout<<"Jumlah Mahasiswa : "<<info(C).Count<< endl;
-                cout<<"Jenis Mahasiswa  : "<<info(C).studentType <<endl;
-                cout<<endl;
-            }
-            break;
-
-        case 10:
-            cout<< "Masukkan nama mahasiswa yang dicari: ";
-            cin >> name;
-
-            cout<< "Masukkan mata kuliah yang dicari : ";
-            cin >> course;
-
-            searchStudentInCourse(LC, LS, name, course, S, C);
-            if (S == NULL){
-                cout<<"Nama mahasiswa pada mata kuliah tersebut tidak ditemukan :("<<endl;
-            }else{
-                cout<<"Berikut data mahasiswa yang sesuai.";
-                cout<<"Nama : "<<info(S).studentName<<endl;
-                cout<<"NIM       : "<<info(S).studentID <<endl;
-                cout<<"Kelas Asal : "<<info(S).classOrigin <<endl;
-                cout<<"Jenis Mahasiswa  : "<<info(S).studentType <<endl;
-                cout<<endl;
-            }
-            break;
-
-        case 11:
-            string jawaban;
-            cout<<"Apakah anda yakin untuk memfinalisasi registrasi? (ya/tidak): ";
-            cin>> jawaban;
-
-            if(jawaban == "ya"){
-                C = first(LC);
-                while(C != NULL){
-                    if(info(C).Count == 0){
-                        deleteCourse(LC,C);
+                        C = newElm_Course(newCourse); // Create course element
+                        addCourse(LC, C);             // Add course to the list
+                        cout << endl;
                     }
-                    C = next(C);
+                    break;
+
+                case 2: // Remove a course
+                    cout << "Enter the course details to delete:" << endl;
+                    cout << "Course Name: ";
+                    cin >> course;
+                    cout << "Class Name: ";
+                    cin >> Class;
+
+                    C = first(LC);
+                    while (C != NULL && (info(C).courseName != course || info(C).className != Class))
+                    {
+                        C = next(C);
+                    }
+
+                    deleteCourse(LC, C);
+
+                    if (C != NULL)
+                    {
+                        cout << "Course list after deletion:" << endl;
+                        showCourses(LC);
+                    }
+                    else
+                    {
+                        cout << "Course not found in the list." << endl;
+                    }
+                    break;
+
+                case 3: // Register a student for courses
+                    cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Clear input buffer
+                    cout << "---- Student Registration ----" << endl;
+                    cout << "Name: ";
+                    cin >> newStudent.studentName;
+                    cout << "Student ID: ";
+                    cin >> newStudent.studentID;
+                    cout << "Original Class: ";
+                    cin >> newStudent.classOrigin;
+
+                    // Validate student type
+                    do
+                    {
+                        cout << "Student Type (regular/international): ";
+                        cin >> newStudent.studentType;
+                    } while (!isValidStudentType(newStudent.studentType));
+
+                    S = newElm_Student(newStudent); // Create student element
+                    cout << endl;
+
+                    cout << "Enter the number of courses to register for: ";
+                    cin >> n;
+
+                    jumlah = 0; // Count courses already registered
+                    C = first(LC);
+                    while (C != NULL)
+                    {
+                        adrStudent Mhs = nextStudent(C);
+                        while (Mhs != NULL)
+                        {
+                            if (info(Mhs).studentName == newStudent.studentName)
+                            {
+                                jumlah++;
+                            }
+                            Mhs = next(Mhs);
+                        }
+                        C = next(C);
+                    }
+
+                    while ((n + jumlah) > 3)
+                    {
+                        cout << "Error: Maximum registration limit is 3 courses." << endl;
+                        cout << "Remaining slots available: " << 3 - jumlah << "." << endl;
+                        cout << "Re-enter the number of courses: ";
+                        cin >> n;
+                    }
+
+                    for (i = 1; i <= n; ++i)
+                    {
+                        cout << "Enter the name of course " << i << ": ";
+                        cin >> course;
+                        setClass(LC, LS, S, course);
+                    }
+                    cout << endl;
+                    break;
+
+                case 4: // Remove a student's course registration
+                    cout << "Enter the registration details to delete:" << endl;
+                    cout << "Student Name: ";
+                    cin >> name;
+                    cout << "Course Name: ";
+                    cin >> course;
+
+                    deleteClass(LC, LS, name, course);
+                    cout << "Registration list after deletion:" << endl;
+                    showAllData(LC, LS);
+                    break;
+
+                case 5: // Update student count for courses
+                    updateCount(LC, LS);
+                    cout << "Status: Student counts updated successfully." << endl;
+                    break;
+
+                case 6: // Display all courses
+                    cout << "Course List:" << endl
+                        << endl;
+                    showCourses(LC);
+                    break;
+
+                case 7: // Display students in a specific course and class
+                    cout << "Enter the course details:" << endl;
+                    cout << "Course Name: ";
+                    cin >> course;
+                    cout << "Class Name: ";
+                    cin >> Class;
+
+                    showStudentInCourse(LC, LS, course, Class);
+                    cout << endl;
+                    break;
+
+                case 8: // Display all courses and registered students
+                    cout << "All Course Registrations:" << endl;
+                    showAllData(LC, LS);
+                    break;
+
+                case 9: // Search for a course with available quota
+                    cout << "Enter the course name: ";
+                    cin >> course;
+                    cout << "Enter the student type (regular/international): ";
+                    cin >> type;
+
+                    C = searchCourseByQuota(LC, course, type);
+
+                    if (C == NULL)
+                    {
+                        cout << "No available quota for course: " << course << " (" << type << ")" << endl;
+                    }
+                    else
+                    {
+                        cout << "Course Details:" << endl;
+                        cout << "Name: " << info(C).courseName << endl;
+                        cout << "Class: " << info(C).className << endl;
+                        cout << "Max Quota: " << info(C).quota << endl;
+                        cout << "Current Enrollment: " << info(C).Count << endl;
+                        cout << "Student Type: " << info(C).studentType << endl;
+                    }
+                    break;
+
+                case 10: // Search for a specific student in a course
+                    cout << "Enter the student name: ";
+                    cin >> name;
+                    cout << "Enter the course name: ";
+                    cin >> course;
+
+                    searchStudentInCourse(LC, LS, name, course, S, C);
+
+                    if (S == NULL)
+                    {
+                        cout << "Student not found in the specified course." << endl;
+                    }
+                    else
+                    {
+                        cout << "Student Details:" << endl;
+                        cout << "Name: " << info(S).studentName << endl;
+                        cout << "ID: " << info(S).studentID << endl;
+                        cout << "Original Class: " << info(S).classOrigin << endl;
+                        cout << "Type: " << info(S).studentType << endl;
+                    }
+                    break;
+
+                case 11:
+                {                        // Finalize course registration
+                    string confirmation; // Declare variable at the top of this case
+                    cout << "Do you want to finalize the registration? (yes/no): ";
+                    cin >> confirmation;
+
+                    if (confirmation == "yes")
+                    {
+                        C = first(LC);
+                        while (C != NULL)
+                        {
+                            if (info(C).Count == 0)
+                            {
+                                deleteCourse(LC, C);
+                            }
+                            C = next(C);
+                        }
+                    }
+                    else if (confirmation != "no")
+                    {
+                        cout << "Invalid input. Please enter yes or no." << endl;
+                    }
+                    break;
                 }
-            }else if(jawaban != "ya" || jawaban != "tidak"){
-                cout << "Input salah, masukkan kembali jawaban: "<<endl;
-                cin>>jawaban;
+
+                case 0: // Exit
+                    cout << "Exiting the program. Goodbye!" << endl;
+                    break;
+
+                default:
+                    cout << "Invalid option. Please try again." << endl;
+                }
+            } catch (const ios_base::failure& e) {
+                cin.clear();
+                cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                cout << "Invalid input. Please try again." << endl;
             }
-            break;
-        }
 
-        cout << "Kembali ke menu utama? (Y/N): ";
-        cin >> kembali;
-        if (kembali == "N"){
-            break;
-        }else if (kembali != "Y" && kembali != "N"){
-            cout<<"INPUT TIDAK VALID, kembali ke menu utama? (Y/N): ";
-            cin >> kembali;
-        }
-        system("CLS");
+            if (option != 0)
+            {
+                cout << "Return to the main menu? (Y/N): ";
+                cin >> continueProgram;
 
-        opsi = selectMenu();
-        cout<<endl;
+                if (continueProgram == "N" || continueProgram == "n")
+                {
+                    break;
+                }
+                else if (continueProgram != "Y" && continueProgram != "y")
+                {
+                    cout << "Invalid input. Returning to the main menu." << endl;
+                    continueProgram = "Y";
+                }
+
+                system("CLS"); // Clear the screen
+            }
+        } while (option != 0 && (continueProgram == "Y" || continueProgram == "y"));
+
+        // Add proper cleanup before exit
+        clearAllCourses(LC);
+        return SUCCESS;
+    } catch (const exception& e) {
+        cout << "Program error: " << e.what() << endl;
+        return ERROR_INVALID_INPUT;
     }
-    cout<< "ANDA TELAH KELUAR DARI PROGRAM"<<endl;
-    return 0;
 }
