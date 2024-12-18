@@ -94,7 +94,7 @@ struct elmStudent {
 ### Step 1: Clone the Repository
 
 ```bash
-git clone https://github.com/username/course-registration.git
+git clone https://github.com/filzarahma/Simpel-LMS-Registrasi-Mata-Kuliah.git
 ```
 
 ### Step 2: Open the Project in Code::Blocks
